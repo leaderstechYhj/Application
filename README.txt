@@ -281,19 +281,19 @@ padding: 4px 10px 6px
 
 
 ---------------------------------------------------------------
-8. 구현 순서 (예정)
+8. 구현 순서 (완료)
 ---------------------------------------------------------------
 
-Step 1. AppContext.jsx       전체 상태 정의
-Step 2. App.jsx              탭 바 (홈/설정) UI
-Step 3. SettingsPage.jsx     설정 화면 UI + 로직
-Step 4. DipSwitch.jsx        딥스위치 토글 UI
-Step 5. NumberDisplay.jsx    진수 표시 영역 UI
-Step 6. Keypad.jsx           커스텀 숫자 키패드 UI
-Step 7. HomePage.jsx         홈 화면 조합
-Step 8. index.css            다크모드 + 반응형 스타일
-Step 9. PWA 설정             아이폰 홈 화면 추가 지원
-Step 10. GitHub Pages 배포   무료 호스팅
+✅ Step 1.  AppContext.jsx       전체 상태 정의
+✅ Step 2.  App.jsx              탭 바 (홈/설정) UI
+✅ Step 3.  SettingsPage.jsx     설정 화면 UI + 로직
+✅ Step 4.  DipSwitch.jsx        딥스위치 토글 UI
+✅ Step 5.  NumberDisplay.jsx    진수 표시 영역 UI
+✅ Step 6.  Keypad.jsx           커스텀 숫자 키패드 UI
+✅ Step 7.  HomePage.jsx         홈 화면 조합
+✅ Step 8.  index.css            다크모드 + 반응형 스타일
+✅ Step 9.  PWA 설정             아이폰 홈 화면 추가 지원
+✅ Step 10. GitHub Pages 배포    무료 호스팅
 
 
 ---------------------------------------------------------------

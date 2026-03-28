@@ -1,7 +1,7 @@
 {
   "name": "DIP Switch Calculator",
   "short_name": "DipSwitch",
-  "start_url": "/Application/dip-switch-app/",
+  "start_url": "/Application/",
   "display": "standalone",
   "background_color": "#1c1c1e",
   "theme_color": "#1c1c1e",
