@@ -127,7 +127,10 @@ activeBase        현재 키패드 입력 중인 진수 영역 (8 or 10 or 16)
 
 기준 화면: 아이폰 15 Pro (393px)
 컬러 시스템은 아래 [디자인 토큰] 섹션 참고
-탭바 높이: 50px (하단 고정), 상태바 높이: 20px (상단 고정)
+화면 9분할 구조 (App.jsx 기준):
+  상단 1/9 (flex: 1)  ← 빈 스페이서 (Dynamic Island / 상태바 영역)
+  중단 7/9 (flex: 7)  ← 실제 콘텐츠 (홈 또는 설정 화면)
+  하단 1/9 (flex: 1)  ← 탭 바 (홈/설정) — fixed height 대신 flex 비율 사용
 
 [홈 화면 레이아웃]
 
@@ -214,7 +217,7 @@ padding: 4px 10px 6px
     section-title
       font-size: 13px, 대문자, opacity: 0.45, margin-bottom: 3px
     group-inner
-      max-height: 77.7%          ← 섹션 높이의 7/9만 채움
+      max-height: 87.5%          ← 섹션 높이의 7/8만 채움
       justify-content: center
       └ 실제 컨트롤 카드
           border-radius: 10px, border: 0.5px solid

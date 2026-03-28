@@ -9,6 +9,7 @@ function AppContent() {
 
   return (
     <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
+      <div className="top-spacer" />
       <div className="page-content">
         {tab === 'home' ? <HomePage /> : <SettingsPage />}
       </div>
