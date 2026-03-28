@@ -127,19 +127,22 @@ html, body, #root {
   flex: 2;
   background: var(--card);
   border-radius: var(--radius-card);
-  padding: 6px 6px 4px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* 가로: 1fr(좌여백) + 8fr(스위치) + 1fr(우여백) = 10분의 8 */
+  /* 세로: 1fr(상여백) + 6fr(스위치) + 1fr(하여백) = 8분의 6 */
+  grid-template-columns: 1fr 8fr 1fr;
+  grid-template-rows: 1fr 6fr 1fr;
   min-height: 0;
   overflow: hidden;
 }
 
 .switch-columns {
-  flex: 1;
+  grid-column: 2;
+  grid-row: 2;
   display: flex;
   justify-content: center;
   align-items: stretch;
-  gap: 3px;
+  gap: 5px;
   overflow-x: auto;
   overflow-y: hidden;
   min-height: 0;
@@ -150,12 +153,11 @@ html, body, #root {
 }
 
 .switch-col {
-  flex: 0 0 auto;
+  flex: 1;
+  max-width: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  aspect-ratio: 1 / 1.618;
-  max-width: 44px;
 }
 
 .dip-switch {
@@ -173,7 +175,7 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: bold;
   line-height: 1;
 }
@@ -192,9 +194,9 @@ html, body, #root {
   flex-shrink: 0;
   width: 100%;
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
   opacity: 0.55;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 /* 진수 표시 영역 */

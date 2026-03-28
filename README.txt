@@ -135,28 +135,32 @@ padding: 6px 10px, gap: 5px
 
   상단 3/7 (flex: 3)
   ├── 딥스위치 영역 (flex: 2)
-  │     border-radius: 10px, padding: 6px 6px 4px
+  │     border-radius: 10px
+  │     display: grid
+  │       grid-template-columns: 1fr 8fr 1fr  ← 가로 10분의 8 (좌우 각 1/10 여백)
+  │       grid-template-rows:    1fr 6fr 1fr  ← 세로 8분의 6 (상하 각 1/8 여백)
   │
-  │     [switch-columns] flex: 1, justify-content: center
+  │     [switch-columns] → grid-column: 2, grid-row: 2 (가운데 셀에 배치)
   │       · 스위치 개수만큼 switch-col을 가로 나열
+  │       · gap: 5px (스위치 간 여백)
   │       · overflow-x: auto (스위치 많을 때 가로 스크롤)
   │
   │     [switch-col] 각 스위치 + 번호를 하나의 컬럼으로 묶음
-  │       · aspect-ratio: 1 / 1.618  ← 황금비율 (세로 기준 가로 결정)
-  │       · max-width: 44px          ← 오버플로우 방지
-  │       · flex: 0 0 auto, flex-shrink: 0
+  │       · flex: 1              ← 가용 너비를 균등 분배 (반응형)
+  │       · max-width: 60px     ← 스위치 수 적을 때 너무 넓어지는 것 방지
+  │       · 높이: 부모(switch-columns) 높이를 100% 채움 (align-items: stretch)
   │       · 위에 DipSwitch (flex: 1), 아래에 번호 (flex-shrink: 0)
   │
   │     [DipSwitch] width: 100%, flex: 1
   │       · border-radius: 5px
   │       · 위 칸 = 1 (회색)      ← 기본 상태
   │       · 아래 칸 = 0 (파란색)  ← 기본 상태
-  │       · 0/1 폰트: 10px bold
+  │       · 0/1 폰트: 14px bold
   │
   │     [번호] flex-shrink: 0
   │       · LSB 모드: 1, 2, ... n  (왼쪽 → 오른쪽)
   │       · MSB 모드: n, n-1, ... 1 (왼쪽 → 오른쪽)
-  │       · font-size: 10px, opacity: 0.55, text-align: center
+  │       · font-size: 12px, opacity: 0.55, text-align: center
   │
   ├── 진수 표시 영역 (flex: 1)   ← 딥스위치:진수 = 2:1 비율
   │     display: flex, gap: 6px
