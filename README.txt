@@ -2,7 +2,7 @@
        딥스위치 계산기 앱 (DIP Switch Calculator) - 구현 계획서
 ===============================================================
 작성일: 2026-03-28
-최종수정: 2026-03-28 (UI 설계 확정 반영)
+최종수정: 2026-03-28 (UI 반복 개선 반영)
 플랫폼: React (Vite) PWA
 대상기기: 아이폰 (맥북 VSCode에서 개발)
 
@@ -25,8 +25,8 @@
 - 진수 표시 영역 (설정에서 선택한 진수만 표시)
   예) 8진수+16진수 선택 시 → 두 영역만 표시
 - 화면 내 커스텀 키패드
-  · 기본: 0~9
-  · 16진수 선택 시: A~F 추가
+  · 항상 6행 고정 (D~F, A~C, 7~9, 4~6, 1~3, DEL/0/확인)
+  · A~F: 16진수 활성화 시 정상 표시 / 비활성화 시 회색으로 표시 (터치 불가)
 - 숫자 입력 방식: 커서 위치에 삽입
 
 [설정 탭]
@@ -104,7 +104,8 @@ activeBase        현재 키패드 입력 중인 진수 영역 (8 or 10 or 16)
   설정에서 토글 버튼 클릭
     └→ isMSB 상태 반전
         └→ switchValues 배열 순서 반전
-            └→ 딥스위치 UI + 진수 영역 모두 갱신
+            └→ 딥스위치 아래 번호 순서 반전 (LSB: 1~n, MSB: n~1)
+                └→ 딥스위치 UI + 진수 영역 모두 갱신
 
 [다크모드 토글 시]
   설정에서 토글 버튼 클릭
@@ -136,38 +137,60 @@ padding: 6px 10px, gap: 5px
   ├── 딥스위치 영역 (flex: 2)
   │     border-radius: 10px, padding: 6px 6px 4px
   │
-  │     [스위치 행] flex: 1
-  │       · 스위치 개수만큼 가로 나열 (flex:1, max-width:26px)
+  │     [switch-columns] flex: 1, justify-content: center
+  │       · 스위치 개수만큼 switch-col을 가로 나열
+  │       · overflow-x: auto (스위치 많을 때 가로 스크롤)
+  │
+  │     [switch-col] 각 스위치 + 번호를 하나의 컬럼으로 묶음
+  │       · aspect-ratio: 1 / 1.618  ← 황금비율 (세로 기준 가로 결정)
+  │       · max-width: 44px          ← 오버플로우 방지
+  │       · flex: 0 0 auto, flex-shrink: 0
+  │       · 위에 DipSwitch (flex: 1), 아래에 번호 (flex-shrink: 0)
+  │
+  │     [DipSwitch] width: 100%, flex: 1
   │       · border-radius: 5px
   │       · 위 칸 = 1 (회색)      ← 기본 상태
   │       · 아래 칸 = 0 (파란색)  ← 기본 상태
   │       · 0/1 폰트: 10px bold
   │
-  │     [번호 행] flex-shrink: 0
-  │       · 스위치 아래 번호 표시
-  │       · font-size: 10px (스위치 내 숫자와 동일)
-  │       · opacity: 0.55
+  │     [번호] flex-shrink: 0
+  │       · LSB 모드: 1, 2, ... n  (왼쪽 → 오른쪽)
+  │       · MSB 모드: n, n-1, ... 1 (왼쪽 → 오른쪽)
+  │       · font-size: 10px, opacity: 0.55, text-align: center
   │
-  ├── 진수 표시 영역 (flex: 3)
+  ├── 진수 표시 영역 (flex: 1)   ← 딥스위치:진수 = 2:1 비율
   │     display: flex, gap: 6px
   │
   │     [진수 카드] flex: 1 (선택된 진수 수만큼)
   │       border-radius: 8px, padding: 6px 10px
   │       justify-content: space-evenly  ← 라벨/값 간격 확보
-  │       라벨: font-size 10px, opacity 0.45
-  │       값:   font-size 22px, color #0a84ff
+  │       align-items: center            ← 가운데 정렬
+  │       라벨: font-size 10px, opacity 0.45, text-align: center
+  │       값:   font-size 22px, color #0a84ff, text-align: center
   │       활성 카드: border 1.5px solid #0a84ff
 
   하단 4/7 (flex: 4) - 키패드
     display: grid, grid-template-columns: repeat(3, 1fr), gap: 4px
 
-    행 배치 (위 → 아래):
-      [D] [E] [F]   ← 16진수 선택 시만 표시
-      [A] [B] [C]   ← 16진수 선택 시만 표시
+    행 배치 (위 → 아래, 항상 6행 고정):
+      [D] [E] [F]
+      [A] [B] [C]
       [7] [8] [9]
       [4] [5] [6]
       [1] [2] [3]
       [DEL] [0] [확인]
+
+    A~F 키 상태 규칙:
+      · 설정에서 16진수 활성화 시  → 정상 색상, 터치 가능
+      · 설정에서 16진수 비활성화 시 → 회색으로 표시, pointer-events: none
+        다크:  background #2c2c2e, color #636366
+        라이트: background #f2f2f7, color #8e8e93
+        opacity: 0.5, cursor: default
+
+    가로 크기 반응형:
+      · grid-template-columns: repeat(3, 1fr)
+      · width: 100% (부모 너비를 항상 꽉 채움)
+      · 키 하나의 너비는 자동으로 1/3씩 균등 분배
 
     · 모든 키 font-size: 16px 동일
     · border-radius: 7px
@@ -266,9 +289,118 @@ Step 2. App.jsx              탭 바 (홈/설정) UI
 Step 3. SettingsPage.jsx     설정 화면 UI + 로직
 Step 4. DipSwitch.jsx        딥스위치 토글 UI
 Step 5. NumberDisplay.jsx    진수 표시 영역 UI
-Step 6. Keypad.jsx           커스텀 키패드 UI
+Step 6. Keypad.jsx           커스텀 숫자 키패드 UI
 Step 7. HomePage.jsx         홈 화면 조합
 Step 8. index.css            다크모드 + 반응형 스타일
 Step 9. PWA 설정             아이폰 홈 화면 추가 지원
+Step 10. GitHub Pages 배포   무료 호스팅
+
+
+---------------------------------------------------------------
+9. PWA 설정 (GitHub Pages 배포용)
+---------------------------------------------------------------
+
+앱스토어 없이 아이폰 홈 화면에 추가하는 방식.
+vite-plugin-pwa는 Vite 8과 호환 안 됨 → 수동 설정으로 대체.
+
+[추가/수정 파일 목록]
+
+① index.html (수정 완료)
+   <head> 안에 아래 태그 추가:
+     <link rel="manifest" href="/manifest.json" />
+     <meta name="apple-mobile-web-app-capable" content="yes" />
+     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+     <meta name="apple-mobile-web-app-title" content="딥스위치 계산기" />
+     <link rel="apple-touch-icon" href="/icon-192.png" />
+   주의: 중복 태그 없도록 정리할 것
+
+② public/manifest.json (추가 필요)
+   {
+     "name": "DIP Switch Calculator",
+     "short_name": "DipSwitch",
+     "start_url": "./",
+     "display": "standalone",
+     "background_color": "#1c1c1e",
+     "theme_color": "#1c1c1e",
+     "icons": [
+       { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+       { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
+     ]
+   }
+
+③ public/icon-192.png (추가 필요)   192x192px 아이콘
+④ public/icon-512.png (추가 필요)   512x512px 아이콘
+
+⑤ vite.config.js (수정 필요)
+   base 경로를 GitHub 저장소 이름으로 설정:
+   export default defineConfig({
+     plugins: [react()],
+     base: '/dip-switch-app/'   ← 저장소 이름과 반드시 일치
+   })
+
+
+---------------------------------------------------------------
+10. GitHub Pages 배포 방법
+---------------------------------------------------------------
+
+배포 플랫폼: GitHub Pages (무료, 계정 있음, git 설치됨)
+
+[배포 순서]
+
+① GitHub에 저장소 생성
+   - 저장소 이름: dip-switch-app  (vite.config.js base와 일치)
+   - Public으로 생성
+
+② 로컬 프로젝트와 연결
+   cd dip-switch-app
+   git init
+   git remote add origin https://github.com/[유저명]/dip-switch-app.git
+
+③ gh-pages 패키지 설치
+   npm install gh-pages -D
+
+④ package.json에 배포 스크립트 추가
+   "scripts" 안에 추가:
+     "predeploy": "npm run build",
+     "deploy": "gh-pages -d dist"
+
+⑤ 배포 실행
+   npm run deploy
+
+⑥ GitHub 저장소 설정
+   Settings → Pages → Source: gh-pages 브랜치 선택
+
+⑦ 배포 URL 확인
+   https://[유저명].github.io/dip-switch-app/
+
+[코드 수정 후 재배포 방법]
+   npm run deploy
+   → 자동으로 빌드 후 gh-pages 브랜치에 올라감
+   → 1~2분 후 URL에 반영됨
+
+[아이폰 홈 화면 추가 방법]
+   1. 아이폰 사파리에서 배포 URL 접속
+   2. 하단 공유 버튼 터치
+   3. "홈 화면에 추가" 선택
+   4. 이후 홈 화면에서 앱처럼 실행 가능
+
+
+---------------------------------------------------------------
+11. 현재 진행 상황 (2026-03-28 기준)
+---------------------------------------------------------------
+
+[완료]
+  ✅ 개발 환경 세팅 (Node.js v25.8.2, Vite v8.0.3, React)
+  ✅ UI 디자인 확정 (홈/설정 화면 레이아웃 반복 개선)
+  ✅ README 스펙 문서 작성
+  ✅ index.html PWA 메타태그 추가
+
+[남은 작업]
+  ⬜ public/manifest.json 생성
+  ⬜ public/icon-192.png, icon-512.png 아이콘 준비
+  ⬜ vite.config.js base 경로 설정
+  ⬜ React 컴포넌트 코드 작성 (Step 1~8)
+  ⬜ GitHub 저장소 생성 및 연결
+  ⬜ gh-pages 배포
 
 ===============================================================

@@ -4,20 +4,20 @@ import NumberDisplay from '../components/NumberDisplay';
 import Keypad from '../components/Keypad';
 
 export default function HomePage() {
-  const { switchCount, selectedBases } = useApp();
+  const { switchCount, selectedBases, isMSB } = useApp();
 
   return (
     <div className="home-page">
       <div className="top-section">
         <div className="dip-switch-area">
-          <div className="switch-row">
+          <div className="switch-columns">
             {Array.from({ length: switchCount }, (_, i) => (
-              <DipSwitch key={i} index={i} />
-            ))}
-          </div>
-          <div className="switch-number-row">
-            {Array.from({ length: switchCount }, (_, i) => (
-              <span key={i} className="switch-number">{i + 1}</span>
+              <div key={i} className="switch-col">
+                <DipSwitch index={i} />
+                <span className="switch-number">
+                  {isMSB ? switchCount - i : i + 1}
+                </span>
+              </div>
             ))}
           </div>
         </div>

@@ -1,111 +1,471 @@
+/* ===== 디자인 토큰 ===== */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --blue: #0a84ff;
+  --green: #30d158;
+  --toggle-off: #636366;
+  --radius-card: 10px;
+  --radius-btn: 7px;
+  --radius-switch: 5px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+.dark {
+  --bg: #1c1c1e;
+  --card: #2c2c2e;
+  --divider: #3a3a3c;
+  --btn-inactive-bg: #3a3a3c;
+  --btn-inactive-text: #636366;
+  --text: #f2f2f7;
+  --tab-inactive: #636366;
+  --hex-disabled-bg: #2c2c2e;
+  --hex-disabled-text: #636366;
 }
 
-body {
+.light {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --divider: #c6c6c8;
+  --btn-inactive-bg: #e5e5ea;
+  --btn-inactive-text: #636366;
+  --text: #1c1c1e;
+  --tab-inactive: #8e8e93;
+  --hex-disabled-bg: #f2f2f7;
+  --hex-disabled-text: #8e8e93;
+}
+
+/* ===== 리셋 & 기본 ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ===== 앱 컨테이너 ===== */
+.app {
+  height: 100dvh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+/* ===== 탭 바 ===== */
+.tab-bar {
+  height: 50px;
+  flex-shrink: 0;
+  background: var(--card);
+  border-top: 0.5px solid var(--divider);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--tab-inactive);
+  font-size: 10px;
+  font-family: inherit;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.tab-btn.active {
+  color: var(--blue);
+}
+
+.tab-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.tab-text {
+  font-size: 10px;
+}
+
+/* ===== 홈 화면 ===== */
+.home-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  gap: 5px;
+  min-height: 0;
+}
+
+.top-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 0;
+}
+
+/* 딥스위치 영역 */
+.dip-switch-area {
+  flex: 2;
+  background: var(--card);
+  border-radius: var(--radius-card);
+  padding: 6px 6px 4px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.switch-columns {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-height: 0;
+}
+
+.switch-columns::-webkit-scrollbar {
+  display: none;
+}
+
+.switch-col {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  aspect-ratio: 1 / 1.618;
+  max-width: 44px;
+}
+
+.dip-switch {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-switch);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.switch-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.switch-cell.active {
+  background: var(--blue);
+  color: #fff;
+}
+
+.switch-cell.inactive {
+  background: var(--btn-inactive-bg);
+  color: var(--btn-inactive-text);
+}
+
+.switch-number {
+  flex-shrink: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  opacity: 0.55;
+  margin-top: 2px;
+}
+
+/* 진수 표시 영역 */
+.number-display-area {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+  min-height: 0;
+}
+
+.number-display {
+  flex: 1;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  min-width: 0;
+}
+
+.number-display.active {
+  border-color: var(--blue);
+}
+
+.base-label {
+  font-size: 10px;
+  opacity: 0.45;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.base-value {
+  font-size: 22px;
+  color: var(--blue);
+  font-variant-numeric: tabular-nums;
+  word-break: break-all;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.cursor-bar {
+  color: var(--blue);
+  font-weight: 100;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 키패드 */
+.keypad-section {
+  flex: 4;
+  min-height: 0;
+}
+
+.keypad {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.key-btn {
+  background: var(--card);
+  color: var(--text);
+  border: none;
+  border-radius: var(--radius-btn);
+  font-size: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  touch-action: manipulation;
+}
+
+.key-btn:active {
+  opacity: 0.6;
+}
+
+.confirm-btn {
+  background: var(--blue);
+  color: #fff;
+}
+
+.del-btn {
+  background: var(--btn-inactive-bg);
+  color: var(--btn-inactive-text);
+}
+
+.hex-disabled {
+  background: var(--hex-disabled-bg);
+  color: var(--hex-disabled-text);
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ===== 설정 화면 ===== */
+.settings-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 10px 6px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.settings-content {
+  flex: 5;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.settings-spacer {
+  flex: 2;
+}
+
+.settings-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  padding: 3px 0;
+}
+
+.section-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin-bottom: 3px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.group-inner {
+  max-height: 66.6%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 토글 그룹 */
+.toggle-group {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--divider);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.toggle-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  min-height: 0;
+}
+
+.toggle-label {
+  font-size: 14px;
+}
+
+.divider {
+  height: 0.5px;
+  background: var(--divider);
+  margin: 0 12px;
+  flex-shrink: 0;
+}
+
+/* iOS 스타일 토글 스위치 */
+.toggle-switch {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.on  { background: var(--green); }
+.toggle-switch.off { background: var(--toggle-off); }
+
+.toggle-thumb {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  background: #fff;
+  top: 2px;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch.on  .toggle-thumb { left: 20px; }
+.toggle-switch.off .toggle-thumb { left: 2px; }
+
+/* 버튼 그룹 (진수, ON방향) */
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  background: var(--card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--divider);
+  padding: 8px;
+}
+
+.base-btn {
+  height: 30px;
+  border-radius: var(--radius-btn);
+  padding: 0 10px;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  background: var(--btn-inactive-bg);
+  color: var(--btn-inactive-text);
+  font-family: inherit;
+  touch-action: manipulation;
+}
+
+.base-btn.selected {
+  background: var(--blue);
+  color: #fff;
+}
+
+/* 딥스위치 개수 조절 */
+.count-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--card);
+  border-radius: var(--radius-card);
+  border: 0.5px solid var(--divider);
+  padding: 8px 12px;
+}
+
+.count-label {
+  font-size: 14px;
+  flex: 1;
+}
+
+.count-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+.count-value {
+  font-size: 16px;
+  min-width: 28px;
+  text-align: center;
 }
