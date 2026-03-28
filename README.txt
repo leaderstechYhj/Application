@@ -6,6 +6,7 @@
 플랫폼: React (Vite) PWA
 대상기기: 아이폰 (맥북 VSCode에서 개발)
 
+//git push 한 다음 npm run deploy 해야 배포됨
 
 ---------------------------------------------------------------
 1. 프로젝트 개요
@@ -211,9 +212,9 @@ padding: 4px 10px 6px
 
   각 섹션 공통 구조:
     section-title
-      font-size: 10px, 대문자, opacity: 0.45, margin-bottom: 3px
+      font-size: 13px, 대문자, opacity: 0.45, margin-bottom: 3px
     group-inner
-      max-height: 66.6%          ← 섹션 높이의 2/3만 채움
+      max-height: 77.7%          ← 섹션 높이의 7/9만 채움
       justify-content: center
       └ 실제 컨트롤 카드
           border-radius: 10px, border: 0.5px solid
