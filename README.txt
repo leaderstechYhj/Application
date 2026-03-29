@@ -27,7 +27,7 @@
   예) 8진수+16진수 선택 시 → 두 영역만 표시
 - 화면 내 커스텀 키패드
   · 항상 6행 고정 (D~F, A~C, 7~9, 4~6, 1~3, RESET/0/DEL)
-  · A~F: 16진수 활성화 시 정상 표시 / 비활성화 시 회색으로 표시 (터치 불가)
+  · A~F: 사용자가 16진수 영역을 터치했을 때만 활성화 / 그 외(8·10진수 터치 또는 미선택)엔 회색 표시 (터치 불가)
   · RESET: 딥스위치 및 진수 표시 전체를 0으로 초기화
   · DEL: 커서 앞 글자 하나 삭제 (백스페이스)
 - 숫자 입력 방식: 커서 위치에 삽입, leading zero 자동 제거
@@ -205,8 +205,8 @@ padding: 6px 10px, gap: 5px
         예) "0" + "1" → "1" (not "01"), "0" + "5" + "5" → "55"
 
     A~F 키 상태 규칙:
-      · 설정에서 16진수 활성화 시  → 정상 색상, 터치 가능
-      · 설정에서 16진수 비활성화 시 → 회색으로 표시, pointer-events: none
+      · 사용자가 16진수 영역 터치 (activeBase === 16) → 정상 색상, 터치 가능
+      · 그 외 (8진수·10진수 터치, 또는 미선택 상태)  → 회색으로 표시, pointer-events: none
         다크:  background #2c2c2e, color #636366
         라이트: background #f2f2f7, color #8e8e93
         opacity: 0.5, cursor: default
@@ -431,7 +431,7 @@ vite-plugin-pwa는 Vite 8과 호환 안 됨 → 수동 설정으로 대체.
   · iOS Safari에서 딥스위치 작게 표시 → aspect-ratio 제거, flex:1 + max-width 방식으로 전환
   · PWA 탭바 깨짐 → height 고정 제거, 9분할 flex 레이아웃으로 해결
   · MSB 토글 시 스위치 번호 미반영 → isMSB ? switchCount-i : i+1 로 동적 계산
-  · 키패드 A~F 항상 표시 → selectedBases.includes(16) 조건으로 변경
+  · 키패드 A~F 활성 조건 → activeBase === 16 (16진수 영역 터치 시에만 활성화)
   · 숫자 입력 leading zero → raw.replace(/^0+([0-9A-Fa-f])/, '$1') 로 제거
 
 ===============================================================

@@ -12,9 +12,9 @@ const ROWS = [
 const HEX_KEYS = new Set(['A', 'B', 'C', 'D', 'E', 'F']);
 
 export default function Keypad() {
-  const { selectedBases, handleKeypadInput } = useApp();
+  const { activeBase, handleKeypadInput } = useApp();
 
-  const hex16Active = selectedBases.includes(16);
+  const hex16Active = activeBase === 16;
 
   return (
     <div className="keypad">
