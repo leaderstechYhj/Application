@@ -2,7 +2,7 @@
        딥스위치 계산기 앱 (DIP Switch Calculator) - 구현 계획서
 ===============================================================
 작성일: 2026-03-28
-최종수정: 2026-03-28 (UI 반복 개선 반영)
+최종수정: 2026-03-28 (키패드 버튼 개편 + leading zero 제거 + PWA 레이아웃 수정)
 플랫폼: React (Vite) PWA
 대상기기: 아이폰 (맥북 VSCode에서 개발)
 
@@ -26,9 +26,12 @@
 - 진수 표시 영역 (설정에서 선택한 진수만 표시)
   예) 8진수+16진수 선택 시 → 두 영역만 표시
 - 화면 내 커스텀 키패드
-  · 항상 6행 고정 (D~F, A~C, 7~9, 4~6, 1~3, DEL/0/확인)
+  · 항상 6행 고정 (D~F, A~C, 7~9, 4~6, 1~3, RESET/0/DEL)
   · A~F: 16진수 활성화 시 정상 표시 / 비활성화 시 회색으로 표시 (터치 불가)
-- 숫자 입력 방식: 커서 위치에 삽입
+  · RESET: 딥스위치 및 진수 표시 전체를 0으로 초기화
+  · DEL: 커서 앞 글자 하나 삭제 (백스페이스)
+- 숫자 입력 방식: 커서 위치에 삽입, leading zero 자동 제거
+  예) "0" 상태에서 "1" 입력 시 → "01" 아닌 "1" 표시
 
 [설정 탭]
 - LSB ↔ MSB 토글 버튼
@@ -51,7 +54,7 @@
 ---------------------------------------------------------------
 
 src/
-├── App.jsx                  ← 탭 전환 (홈/설정) 관리
+├── App.jsx                  ← 탭 전환 (홈/설정) 관리 + 9분할 레이아웃
 ├── main.jsx                 ← 진입점 (건드릴 일 거의 없음)
 │
 ├── pages/
@@ -81,6 +84,8 @@ isDarkMode        다크/라이트 모드 (true = 다크모드)
 onDirection       ON 방향 설정 ("top" = 위가 ON, "bottom" = 아래가 ON)
 selectedBases[]   선택된 진수 목록 (예: [10, 16] 또는 [8, 10, 16])
 activeBase        현재 키패드 입력 중인 진수 영역 (8 or 10 or 16)
+inputValue        현재 키패드 입력 중인 문자열
+cursorPos         커서 위치 (inputValue 내 인덱스)
 
 
 ---------------------------------------------------------------
@@ -95,11 +100,13 @@ activeBase        현재 키패드 입력 중인 진수 영역 (8 or 10 or 16)
 [진수 영역 클릭 + 키패드 입력 시]
   사용자가 진수 영역 클릭 (예: 16진수 영역)
     └→ activeBase = 16 으로 설정
-        └→ 키패드에 A~F 버튼 추가 표시
-            └→ 숫자 입력 (커서 위치에 삽입 방식)
-                └→ 해당 진수값 → 이진수 변환
-                    └→ switchValues 배열 업데이트
-                        └→ 딥스위치 UI + 나머지 진수 영역 모두 자동 갱신
+        └→ 숫자 입력 (커서 위치에 삽입, leading zero 자동 제거)
+            └→ 해당 진수값 → 이진수 변환
+                └→ switchValues 배열 업데이트
+                    └→ 딥스위치 UI + 나머지 진수 영역 모두 자동 갱신
+
+  [DEL 키] 커서 앞 글자 하나 삭제 → switchValues 갱신
+  [RESET 키] switchValues 전체 0 초기화, inputValue → "0"
 
 [MSB/LSB 토글 시]
   설정에서 토글 버튼 클릭
@@ -127,6 +134,7 @@ activeBase        현재 키패드 입력 중인 진수 영역 (8 or 10 or 16)
 
 기준 화면: 아이폰 15 Pro (393px)
 컬러 시스템은 아래 [디자인 토큰] 섹션 참고
+
 화면 9분할 구조 (App.jsx 기준):
   상단 1/9 (flex: 1)  ← 빈 스페이서 (Dynamic Island / 상태바 영역)
   중단 7/9 (flex: 7)  ← 실제 콘텐츠 (홈 또는 설정 화면)
@@ -186,7 +194,15 @@ padding: 6px 10px, gap: 5px
       [7] [8] [9]
       [4] [5] [6]
       [1] [2] [3]
-      [DEL] [0] [확인]
+      [RESET] [0] [DEL]
+
+    버튼 동작:
+      · RESET: 스위치 전체 + 진수 표시 → 0 초기화 (회색 배경)
+      · DEL:   커서 앞 글자 하나 삭제, 빈 문자열이 되면 "0" 표시 (파란색 배경)
+
+    숫자 입력 규칙:
+      · leading zero 자동 제거: "0" 상태에서 숫자 입력 시 앞의 0 제거
+        예) "0" + "1" → "1" (not "01"), "0" + "5" + "5" → "55"
 
     A~F 키 상태 규칙:
       · 설정에서 16진수 활성화 시  → 정상 색상, 터치 가능
@@ -202,7 +218,7 @@ padding: 6px 10px, gap: 5px
 
     · 모든 키 font-size: 16px 동일
     · border-radius: 7px
-    · 확인 버튼: background #0a84ff, color #fff
+    · DEL 버튼: background #0a84ff, color #fff
 
 
 [설정 화면 레이아웃]
@@ -283,7 +299,7 @@ padding: 4px 10px 6px
   cd dip-switch-app
   npm run dev
 
-[아이폰에서 확인하는 방법 - 추후]
+[아이폰에서 확인하는 방법]
   npm run dev -- --host
   → 맥북과 같은 와이파이에 연결된 아이폰에서 접속 가능
 
@@ -293,11 +309,11 @@ padding: 4px 10px 6px
 ---------------------------------------------------------------
 
 ✅ Step 1.  AppContext.jsx       전체 상태 정의
-✅ Step 2.  App.jsx              탭 바 (홈/설정) UI
+✅ Step 2.  App.jsx              탭 바 (홈/설정) UI + 9분할 레이아웃
 ✅ Step 3.  SettingsPage.jsx     설정 화면 UI + 로직
 ✅ Step 4.  DipSwitch.jsx        딥스위치 토글 UI
 ✅ Step 5.  NumberDisplay.jsx    진수 표시 영역 UI
-✅ Step 6.  Keypad.jsx           커스텀 숫자 키패드 UI
+✅ Step 6.  Keypad.jsx           커스텀 숫자 키패드 UI (RESET/DEL 개편)
 ✅ Step 7.  HomePage.jsx         홈 화면 조합
 ✅ Step 8.  index.css            다크모드 + 반응형 스타일
 ✅ Step 9.  PWA 설정             아이폰 홈 화면 추가 지원
@@ -382,6 +398,7 @@ vite-plugin-pwa는 Vite 8과 호환 안 됨 → 수동 설정으로 대체.
    https://[유저명].github.io/dip-switch-app/
 
 [코드 수정 후 재배포 방법]
+   git push (소스 코드 백업)
    npm run deploy
    → 자동으로 빌드 후 gh-pages 브랜치에 올라감
    → 1~2분 후 URL에 반영됨
@@ -399,16 +416,22 @@ vite-plugin-pwa는 Vite 8과 호환 안 됨 → 수동 설정으로 대체.
 
 [완료]
   ✅ 개발 환경 세팅 (Node.js v25.8.2, Vite v8.0.3, React)
-  ✅ UI 디자인 확정 (홈/설정 화면 레이아웃 반복 개선)
-  ✅ README 스펙 문서 작성
-  ✅ index.html PWA 메타태그 추가
+  ✅ AppContext.jsx — 전체 상태 + 키패드 로직 (RESET/DEL/leading zero 제거)
+  ✅ App.jsx — 탭 전환 + 9분할 레이아웃 (top-spacer / page-content / tab-bar)
+  ✅ HomePage.jsx — 딥스위치 + 진수 표시 + 키패드 조합
+  ✅ SettingsPage.jsx — 4개 섹션 (5/7 영역, 각 섹션 max-height 87.5%)
+  ✅ DipSwitch.jsx — 딥스위치 토글 UI (CSS Grid 비율 배치)
+  ✅ NumberDisplay.jsx — 진수 표시 + 커서 UI
+  ✅ Keypad.jsx — 6행 고정, RESET/DEL 버튼, A~F 비활성 처리
+  ✅ index.css — 다크/라이트 모드, 9분할 flex, 반응형 스타일
+  ✅ index.html — PWA 메타태그 추가
+  ✅ GitHub Pages 배포 완료
 
-[남은 작업]
-  ⬜ public/manifest.json 생성
-  ⬜ public/icon-192.png, icon-512.png 아이콘 준비
-  ⬜ vite.config.js base 경로 설정
-  ⬜ React 컴포넌트 코드 작성 (Step 1~8)
-  ⬜ GitHub 저장소 생성 및 연결
-  ⬜ gh-pages 배포
+[이슈 해결 이력]
+  · iOS Safari에서 딥스위치 작게 표시 → aspect-ratio 제거, flex:1 + max-width 방식으로 전환
+  · PWA 탭바 깨짐 → height 고정 제거, 9분할 flex 레이아웃으로 해결
+  · MSB 토글 시 스위치 번호 미반영 → isMSB ? switchCount-i : i+1 로 동적 계산
+  · 키패드 A~F 항상 표시 → selectedBases.includes(16) 조건으로 변경
+  · 숫자 입력 leading zero → raw.replace(/^0+([0-9A-Fa-f])/, '$1') 로 제거
 
 ===============================================================

@@ -6,7 +6,7 @@ const ROWS = [
   ['7', '8', '9'],
   ['4', '5', '6'],
   ['1', '2', '3'],
-  ['DEL', '0', '확인'],
+  ['RESET', '0', 'DEL'],
 ];
 
 const HEX_KEYS = new Set(['A', 'B', 'C', 'D', 'E', 'F']);
@@ -26,7 +26,7 @@ export default function Keypad() {
           return (
             <button
               key={`${ri}-${ki}`}
-              className={`key-btn${key === '확인' ? ' confirm-btn' : ''}${key === 'DEL' ? ' del-btn' : ''}${disabled ? ' hex-disabled' : ''}`}
+              className={`key-btn${key === 'DEL' ? ' confirm-btn' : ''}${key === 'RESET' ? ' del-btn' : ''}${disabled ? ' hex-disabled' : ''}`}
               onPointerDown={(e) => {
                 if (disabled) return;
                 e.preventDefault();

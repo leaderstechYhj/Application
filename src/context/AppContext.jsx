@@ -115,8 +115,10 @@ export function AppProvider({ children }) {
   const handleKeypadInput = useCallback((key) => {
     if (activeBase === null) return;
 
-    if (key === '확인') {
-      deactivateBase();
+    if (key === 'RESET') {
+      setInputValue('0');
+      setCursorPos(1);
+      setSwitchValues(Array(switchCount).fill(0));
       return;
     }
 
@@ -125,23 +127,28 @@ export function AppProvider({ children }) {
         const next = inputValue.slice(0, cursorPos - 1) + inputValue.slice(cursorPos);
         const decimal = next === '' ? 0 : parseInt(next, activeBase);
         if (!isNaN(decimal)) {
-          setInputValue(next);
-          setCursorPos(p => p - 1);
+          const display = next === '' ? '0' : next;
+          const newPos = next === '' ? 1 : cursorPos - 1;
+          setInputValue(display);
+          setCursorPos(newPos);
           setSwitchValues(decimalToSwitches(decimal, switchCount, isMSB));
         }
       }
       return;
     }
 
-    const next = inputValue.slice(0, cursorPos) + key + inputValue.slice(cursorPos);
+    const raw = inputValue.slice(0, cursorPos) + key + inputValue.slice(cursorPos);
+    // leading zero 제거 (예: "012" → "12")
+    const next = raw.replace(/^0+([0-9A-Fa-f])/, '$1');
     const decimal = parseInt(next, activeBase);
     const maxVal = Math.pow(2, switchCount) - 1;
     if (!isNaN(decimal) && decimal <= maxVal) {
+      const diff = raw.length - next.length; // 제거된 앞자리 수
       setInputValue(next);
-      setCursorPos(p => p + 1);
+      setCursorPos(cursorPos + 1 - diff);
       setSwitchValues(decimalToSwitches(decimal, switchCount, isMSB));
     }
-  }, [activeBase, cursorPos, inputValue, switchCount, isMSB, deactivateBase]);
+  }, [activeBase, cursorPos, inputValue, switchCount, isMSB]);
 
   return (
     <AppContext.Provider value={{
